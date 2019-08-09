@@ -3,7 +3,10 @@ using System;
 using Xunit;
 using Xunit.Abstractions;
 using Live0xUtils.DbUtils;
-
+using Live0xUtils.DbUtils.Sqlite;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace Live0xUtilsTest
 {
@@ -51,18 +54,44 @@ namespace Live0xUtilsTest
             Assert.Equal("CD", result);
         }
 
+        [Fact]
+        public void TestXML()
+        {
+            string xml = File.ReadAllText("ASM.txt",Encoding.Default);
+            Live0xUtils.XMLUtils.XMLHelper.XMLToList<Moc>(xml, "ProcessData");
+        }
+
+        [Fact]
+        public void SqliteTest()
+        {
+            SqliteHelper.GetInstance().init(@"D:\MCode\SqliteDB\yzslz.db");
+
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            dic.Add("JCLSH", "T190420P91014360004-01");
+            Moc moc = SqliteHelper.GetInstance().ExcuteEntity<Moc>("SELECT * FROM RESULT_BRAKE WHERE JCLSH = @JCLSH", dic);
+            int i = 0;
+        }
 
 
+        [Fact]
+        public void GetXMLNodeTest()
+        {
+
+        }
 
 
 
         public class Moc
         {
-            public string ID { get; set; }
+            public int? ID { get; set; }
 
             public string HPHM { get; set; }
 
             public string HPZL { get; set; }
+
+            public string YZZLZ { get; set; }
+
+            public string JCLSH { get; set; }
         }
     }
 }

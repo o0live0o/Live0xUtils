@@ -210,7 +210,7 @@ namespace Live0xUtils.DbUtils
         {
             string tableName = typeof(T).Name;
             string filed = "";
-            filed = string.Join(",", typeof(T).GetProperties().FilterKey().Where(p => !keys.Contains(p.Name)).Select(p => $"[{p.Name}] = @{p.Name}"));
+            filed = string.Join(",", typeof(T).GetProperties().Where(p => !keys.Contains(p.Name)).Select(p => $"[{p.Name}] = @{p.Name}"));
             string sql = $"UPDATE [{tableName}] SET {filed} WHERE 1= 1";
             for (int i = 0; i < keys.Length; i++)
             {
