@@ -7,6 +7,9 @@ using Live0xUtils.DbUtils.Sqlite;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Xml.Linq;
+using System.Linq;
+using L = Live0xUtils.DbUtils.SqlServer.SqlHelper;
 
 namespace Live0xUtilsTest
 {
@@ -54,11 +57,14 @@ namespace Live0xUtilsTest
             Assert.Equal("CD", result);
         }
 
+
         [Fact]
         public void TestXML()
         {
-            string xml = File.ReadAllText("ASM.txt",Encoding.Default);
-            Live0xUtils.XMLUtils.XMLHelper.XMLToList<Moc>(xml, "ProcessData");
+            //L.init("IVS30","sa","123456",".");
+            //L.ExecuteNonQuery(,);
+            //string xml = File.ReadAllText("ASM.txt",Encoding.Default);
+            //Live0xUtils.XMLUtils.XMLHelper.XMLToList<Moc>(xml, "ProcessData");
         }
 
         [Fact]
@@ -76,22 +82,44 @@ namespace Live0xUtilsTest
         [Fact]
         public void GetXMLNodeTest()
         {
-
+            string s = File.ReadAllText("ASM.txt");
+            XDocument xDocument = XDocument.Parse(s);
+            var t = from info in xDocument.Descendants("Result").Elements("Row").Elements()
+                    select info;
+            foreach (XElement node in t)
+            {
+                string uu = string.Join("@", t.Select(p => p.Name));
+            }
         }
 
-
+        [Fact]
+        public void ConvertNullable()
+        {
+            Moc moc = new Moc();
+            object ttt = "10";
+            foreach (var p in moc.GetType().GetProperties())
+            {
+                if (p.Name == "ID")
+                {
+                    if (!p.PropertyType.IsGenericType)
+                    {
+                        p.SetValue(moc, Convert.ChangeType(ttt, p.PropertyType), null);
+                    }
+                    else
+                    {
+                        Type genericTypeDefinition = p.PropertyType.GetGenericTypeDefinition();
+                        if (genericTypeDefinition == typeof(Nullable<>))
+                        {
+                            p.SetValue(moc, Convert.ChangeType(ttt, p.PropertyType.GetGenericArguments()[0]), null);
+                        }
+                    }
+                }
+            }
+        }
 
         public class Moc
         {
             public int? ID { get; set; }
-
-            public string HPHM { get; set; }
-
-            public string HPZL { get; set; }
-
-            public string YZZLZ { get; set; }
-
-            public string JCLSH { get; set; }
         }
     }
 }

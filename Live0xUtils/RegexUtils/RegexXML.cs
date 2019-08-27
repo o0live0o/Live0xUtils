@@ -46,8 +46,6 @@ namespace Live0xUtils.RegexUtils
                         {
                             if (p.Name.ToUpper().Equals(node.Name.ToString().ToUpper()))
                             {
-                                //p.SetValue(t, node.Value, null);
-                                //p.SetValue(t, Convert.ChangeType(node.Value,p.PropertyType), null);
                                 if (!p.PropertyType.IsGenericType)
                                 {
                                     p.SetValue(t, Convert.ChangeType(node.Value, p.PropertyType), null);
@@ -57,8 +55,7 @@ namespace Live0xUtils.RegexUtils
                                     Type genericTypeDefinition = p.PropertyType.GetGenericTypeDefinition();
                                     if (genericTypeDefinition == typeof(Nullable<>))
                                     {
-                                        //p.SetValue(t, Convert.ChangeType(t, Nullable.GetUnderlyingType(p.PropertyType)), null);
-                                        p.SetValue(t, Convert.ChangeType(t, p.PropertyType.GetGenericArguments()[0]), null);
+                                        p.SetValue(t, Convert.ChangeType(node.Value, p.PropertyType.GetGenericArguments()[0]), null);
                                     }
                                 }
                                 break;
@@ -67,7 +64,7 @@ namespace Live0xUtils.RegexUtils
                         catch (Exception ex)
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine(ex.Message);
+                            Console.WriteLine(p.Name+"_XMLToModel_"+ ex.Message);
                             Console.ForegroundColor = ConsoleColor.White;
                         }
                     }

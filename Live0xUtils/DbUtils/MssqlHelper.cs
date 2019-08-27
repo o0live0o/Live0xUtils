@@ -12,7 +12,7 @@ namespace Live0xUtils.DbUtils
     public class MssqlHelper
     {
         private static MssqlHelper mssqlHelper = null;
-        private MssqlHelper(){}
+        private MssqlHelper() { }
 
         private static object lockObj = new object();
 
@@ -38,7 +38,7 @@ namespace Live0xUtils.DbUtils
         /*
          * 初始化连接字符串
          */
-        public void init(string dbName,string dbUser,string dbPwd,string dbServer)
+        public void init(string dbName, string dbUser, string dbPwd, string dbServer)
         {
             this.DbName = dbName;
             this.DbUser = dbUser;
@@ -68,7 +68,7 @@ namespace Live0xUtils.DbUtils
                 return b;
             }
         }
-        
+
         public DataTable ExcuteDataTable(string sql, SqlParameter[] sqlParameters)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_conStr))
@@ -77,7 +77,8 @@ namespace Live0xUtils.DbUtils
                 try
                 {
                     SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sql, sqlConnection);
-                    sqlDataAdapter.SelectCommand.Parameters.AddRange(sqlParameters);
+                    if (sqlParameters != null && sqlParameters.Length > 0)
+                        sqlDataAdapter.SelectCommand.Parameters.AddRange(sqlParameters);
                     sqlDataAdapter.Fill(dt);
                 }
                 catch (Exception)
@@ -85,6 +86,24 @@ namespace Live0xUtils.DbUtils
                     throw;
                 }
                 return dt;
+            }
+        }
+
+        public void ExcuteNonQuery(string sql, SqlParameter[] sqlParameters)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_conStr))
+            {
+                try
+                {
+                    SqlCommand sqlCommand = new SqlCommand(sql, sqlConnection);
+                    if (sqlParameters != null && sqlParameters.Length > 0)
+                        sqlCommand.Parameters.AddRange(sqlParameters);
+                    sqlCommand.ExecuteNonQuery();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
         }
 
@@ -104,8 +123,8 @@ namespace Live0xUtils.DbUtils
                     {
                         foreach (var item in infos)
                         {
-                          
-                            if (ExistField(dr,item.Name))
+
+                            if (ExistField(dr, item.Name))
                             {
                                 try
                                 {
@@ -127,7 +146,63 @@ namespace Live0xUtils.DbUtils
             }
         }
 
-        private bool ExistField(SqlDataReader dr,string field)
+        public List<T> ExcuteList<T>(string sql, SqlParameter[] sqlParameters)
+        {
+            List<T> list = new List<T>();
+            using (SqlConnection sqlConnection = new SqlConnection(_conStr))
+            {
+                try
+                {
+                    sqlConnection.Open();
+                    SqlCommand sqlCommand = new SqlCommand(sql, sqlConnection);
+                    sqlCommand.Parameters.AddRange(sqlParameters);
+                    SqlDataReader dr = sqlCommand.ExecuteReader();
+                    if (dr.Read())
+                    {
+                        T t = Activator.CreateInstance<T>();
+                        PropertyInfo[] infos = t.GetType().GetProperties();
+                        foreach (var item in infos)
+                        {
+                            if (ExistField(dr, item.Name))
+                            {
+                                try
+                                {
+                                    if (!item.PropertyType.IsGenericType)
+                                    {
+                                        item.SetValue(t, Convert.ChangeType(dr[item.Name] == DBNull.Value ? null : dr[item.Name], item.PropertyType), null);
+                                    }
+                                    else
+                                    {
+                                        Type genericTypeDefinition = item.PropertyType.GetGenericTypeDefinition();
+                                        if (genericTypeDefinition == typeof(Nullable<>))
+                                        {
+                                            item.SetValue(t, Convert.ChangeType(dr[item.Name] == DBNull.Value ? null : dr[item.Name], item.PropertyType.GetGenericArguments()[0]), null);
+                                        }
+                                    }
+                                }
+                                catch (Exception)
+                                {
+                                    throw;
+                                }
+                            }
+                        }
+                        list.Add(t);
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                return list;
+            }
+        }
+
+        public void ExcuteProduce()
+        {
+
+        }
+
+        private bool ExistField(SqlDataReader dr, string field)
         {
             dr.GetSchemaTable().DefaultView.RowFilter = "ColumnName= '" + field + "'";
             return (dr.GetSchemaTable().DefaultView.Count > 0);
@@ -146,11 +221,11 @@ namespace Live0xUtils.DbUtils
 
             using (SqlConnection sqlConnection = new SqlConnection(_conStr))
             {
-                    SqlCommand sqlCommand = new SqlCommand(sql, sqlConnection);
-                    sqlCommand.Parameters.AddRange(parameters.ToArray());
-                    sqlConnection.Open();
-                    int i = sqlCommand.ExecuteNonQuery();
-                    return i == 1;
+                SqlCommand sqlCommand = new SqlCommand(sql, sqlConnection);
+                sqlCommand.Parameters.AddRange(parameters.ToArray());
+                sqlConnection.Open();
+                int i = sqlCommand.ExecuteNonQuery();
+                return i == 1;
             }
         }
 
@@ -193,7 +268,7 @@ namespace Live0xUtils.DbUtils
             }
         }
 
-        public bool InsertOrUpdate<T>(T t,string key)
+        public bool InsertOrUpdate<T>(T t, string key)
         {
             string tableName = typeof(T).Name;
             if (Exist<T>(t, key))
@@ -202,11 +277,24 @@ namespace Live0xUtils.DbUtils
             }
             else
             {
-               return Insert<T>(t);
+                return Insert<T>(t);
             }
         }
 
-        private bool Update<T>(T t, string[] keys)
+        public bool InsertOrUpdate<T>(T t, string[] keys)
+        {
+            string tableName = typeof(T).Name;
+            if (Exist<T>(t, keys))
+            {
+                return Update<T>(t, keys);
+            }
+            else
+            {
+                return Insert<T>(t);
+            }
+        }
+
+        public bool Update<T>(T t, string[] keys)
         {
             string tableName = typeof(T).Name;
             string filed = "";
@@ -227,20 +315,28 @@ namespace Live0xUtils.DbUtils
             }
         }
 
-        public bool InsertOrUpdate<T>(T t, string[] keys)
+        public bool Update<T>(T t, string[] keyParams, string[] updateParams)
         {
             string tableName = typeof(T).Name;
-            if (Exist<T>(t, keys))
+            string filed = "";
+            filed = string.Join(",", typeof(T).GetProperties().Where(p => updateParams.Contains(p.Name)).Select(p => $"[{p.Name}] = @{p.Name}"));
+            string sql = $"UPDATE [{tableName}] SET {filed} WHERE 1= 1";
+            for (int i = 0; i < keyParams.Length; i++)
             {
-                return Update<T>(t, keys);
+                sql += $" AND [{keyParams[i]}]= @{keyParams[i]}";
             }
-            else
+
+            var parameters = typeof(T).GetProperties().Where(p => updateParams.Contains(p.Name) || keyParams.Contains(p.Name)).Select(p => new SqlParameter($"@{p.Name}", p.GetValue(t, null) ?? DBNull.Value));
+            using (SqlConnection sqlConnection = new SqlConnection(_conStr))
             {
-                return Insert<T>(t);
+                SqlCommand sqlCommand = new SqlCommand(sql, sqlConnection);
+                sqlCommand.Parameters.AddRange(parameters.ToArray());
+                sqlConnection.Open();
+                return sqlCommand.ExecuteNonQuery() > 0;
             }
         }
 
-        private bool Exist<T>(T t, string[] keys)
+        public bool Exist<T>(T t, string[] keys)
         {
             string tableName = typeof(T).Name;
             string sql = $"SELECT * FROM {tableName} WHERE 1= 1 ";
