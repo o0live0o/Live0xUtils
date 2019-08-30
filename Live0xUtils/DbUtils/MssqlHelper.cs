@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using Live0xUtils.ExtendMethod;
+using System.ComponentModel;
 
 namespace Live0xUtils.DbUtils
 {
@@ -128,7 +129,18 @@ namespace Live0xUtils.DbUtils
                             {
                                 try
                                 {
-                                    item.SetValue(t, dr[item.Name] == DBNull.Value ? null : dr[item.Name], null);
+                                    if (!item.PropertyType.IsGenericType)
+                                    {
+                                        item.SetValue(t, dr[item.Name] == DBNull.Value ? null : Convert.ChangeType(dr[item.Name], item.PropertyType), null);
+                                    }
+                                    else
+                                    {
+                                        Type genericTypeDefinition = item.PropertyType.GetGenericTypeDefinition();
+                                        if (genericTypeDefinition == typeof(Nullable<>))
+                                        {
+                                            item.SetValue(t, dr[item.Name] == DBNull.Value ? null : Convert.ChangeType(dr[item.Name], item.PropertyType.GetGenericArguments()[0]), null);
+                                        }
+                                    }
                                 }
                                 catch (Exception ex)
                                 {
@@ -155,9 +167,10 @@ namespace Live0xUtils.DbUtils
                 {
                     sqlConnection.Open();
                     SqlCommand sqlCommand = new SqlCommand(sql, sqlConnection);
-                    sqlCommand.Parameters.AddRange(sqlParameters);
+                    if(sqlParameters != null && sqlParameters.Length > 0)
+                        sqlCommand.Parameters.AddRange(sqlParameters);
                     SqlDataReader dr = sqlCommand.ExecuteReader();
-                    if (dr.Read())
+                    while (dr.Read())
                     {
                         T t = Activator.CreateInstance<T>();
                         PropertyInfo[] infos = t.GetType().GetProperties();
@@ -169,14 +182,14 @@ namespace Live0xUtils.DbUtils
                                 {
                                     if (!item.PropertyType.IsGenericType)
                                     {
-                                        item.SetValue(t, Convert.ChangeType(dr[item.Name] == DBNull.Value ? null : dr[item.Name], item.PropertyType), null);
+                                        item.SetValue(t, dr[item.Name] == DBNull.Value ? null : Convert.ChangeType(dr[item.Name], item.PropertyType), null);
                                     }
                                     else
                                     {
                                         Type genericTypeDefinition = item.PropertyType.GetGenericTypeDefinition();
                                         if (genericTypeDefinition == typeof(Nullable<>))
                                         {
-                                            item.SetValue(t, Convert.ChangeType(dr[item.Name] == DBNull.Value ? null : dr[item.Name], item.PropertyType.GetGenericArguments()[0]), null);
+                                            item.SetValue(t, dr[item.Name] == DBNull.Value ? null : Convert.ChangeType(dr[item.Name], item.PropertyType.GetGenericArguments()[0]), null);
                                         }
                                     }
                                 }
@@ -354,6 +367,5 @@ namespace Live0xUtils.DbUtils
                 return dr.Read();
             }
         }
-
     }
 }
