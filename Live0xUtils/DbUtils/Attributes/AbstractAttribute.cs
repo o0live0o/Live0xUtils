@@ -8,11 +8,13 @@ namespace Live0xUtils.DbUtils.Attributes
     [AttributeUsage(AttributeTargets.All,AllowMultiple =true)]
     public abstract class AbstractAttribute : Attribute
     {
-        public string field;
+        protected string _field;
 
         public AbstractAttribute(string field)
         {
-            this.field = field;
+            this._field = field;
         }
+
+        public abstract bool Validate(object o);
     }
 }

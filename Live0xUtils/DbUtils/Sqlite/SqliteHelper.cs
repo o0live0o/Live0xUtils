@@ -76,14 +76,14 @@ namespace Live0xUtils.DbUtils.Sqlite
                             {
                                 if (!item.PropertyType.IsGenericType)
                                 {
-                                    item.SetValue(t, Convert.ChangeType(dr[item.Name] == DBNull.Value ? null : dr[item.Name], item.PropertyType), null);
+                                    item.SetValue(t, dr[item.Name] == DBNull.Value ? null : Convert.ChangeType(dr[item.Name], item.PropertyType), null);
                                 }
                                 else
                                 {
                                     Type genericTypeDefinition = item.PropertyType.GetGenericTypeDefinition();
                                     if (genericTypeDefinition == typeof(Nullable<>))
                                     {
-                                        item.SetValue(t, Convert.ChangeType(dr[item.Name] == DBNull.Value ? null : dr[item.Name], item.PropertyType.GetGenericArguments()[0]), null);
+                                        item.SetValue(t, dr[item.Name] == DBNull.Value ? null : Convert.ChangeType(dr[item.Name], item.PropertyType.GetGenericArguments()[0]), null);
                                     }
                                 }
                             }
@@ -127,14 +127,14 @@ namespace Live0xUtils.DbUtils.Sqlite
                             {
                                 if (!item.PropertyType.IsGenericType)
                                 {
-                                    item.SetValue(t, Convert.ChangeType(dr[item.Name] == DBNull.Value ? null : dr[item.Name], item.PropertyType), null);
+                                    item.SetValue(t, dr[item.Name] == DBNull.Value ? null : Convert.ChangeType(dr[item.Name], item.PropertyType), null);
                                 }
                                 else
                                 {
                                     Type genericTypeDefinition = item.PropertyType.GetGenericTypeDefinition();
                                     if (genericTypeDefinition == typeof(Nullable<>))
                                     {
-                                        item.SetValue(t, Convert.ChangeType(dr[item.Name] == DBNull.Value ? null : dr[item.Name], item.PropertyType.GetGenericArguments()[0]), null);
+                                        item.SetValue(t, dr[item.Name] == DBNull.Value ? null : Convert.ChangeType(dr[item.Name], item.PropertyType.GetGenericArguments()[0]), null);
                                     }
                                 }
                             }

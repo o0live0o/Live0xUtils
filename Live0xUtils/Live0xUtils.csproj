@@ -67,8 +67,10 @@
     <Compile Include="ConfigUtils\ReadAppConfig.cs" />
     <Compile Include="DbUtils\Attributes\AbstractAttribute.cs" />
     <Compile Include="DbUtils\Attributes\KeyFieldAttribute.cs" />
+    <Compile Include="DbUtils\Attributes\RegAttribute.cs" />
     <Compile Include="DbUtils\GenerateParams.cs" />
     <Compile Include="DbUtils\GenerateSql.cs" />
+    <Compile Include="DbUtils\IDbHelper.cs" />
     <Compile Include="DbUtils\MssqlHelper.cs" />
     <Compile Include="DbUtils\Sqlite\SqliteHelper.cs" />
     <Compile Include="DbUtils\SqlServer\SqlHelper.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="RegexUtils\MatchR.cs" />
     <Compile Include="RegexUtils\RegexText.cs" />
     <Compile Include="RegexUtils\RegexXML.cs" />
+    <Compile Include="WebServiceUtils\WebServiceHelper.cs" />
     <Compile Include="XMLUtils\XMLHelper.cs" />
   </ItemGroup>
   <ItemGroup>

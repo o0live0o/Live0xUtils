@@ -238,7 +238,9 @@ namespace Live0xUtils.DbUtils
                 sqlCommand.Parameters.AddRange(parameters.ToArray());
                 sqlConnection.Open();
                 int i = sqlCommand.ExecuteNonQuery();
+                sqlCommand.Parameters.Clear();
                 return i == 1;
+                
             }
         }
 

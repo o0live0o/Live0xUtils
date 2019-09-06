@@ -10,6 +10,8 @@ using System.Text;
 using System.Xml.Linq;
 using System.Linq;
 using L = Live0xUtils.DbUtils.SqlServer.SqlHelper;
+using System.Text.RegularExpressions;
+using System.Collections;
 
 namespace Live0xUtilsTest
 {
@@ -36,7 +38,7 @@ namespace Live0xUtilsTest
 
             s = "HJ26440601099302019-07-18 13:17:19@@@2019-07-18 13:17:19.193tek1d####";
             pattern = "@@@(.*)tek";
-            t = RegexText.MatchVal(s, pattern,1);
+            t = RegexText.MatchVal(s, pattern, 1);
             Assert.True(b);
         }
 
@@ -45,7 +47,7 @@ namespace Live0xUtilsTest
         {
             string xml = "<?xml version=\"1.0\" encoding=\"GBK\"?><Request Name=\"CMD_CHECKSELF_LLJ\" Method=\"WriteCalib\"><Result><Row><StartTime>2018-07-25 11:34:55</StartTime><EndTime>2018-07-25 11:35:30</EndTime><CalibName>流量计检查</CalibName><O2>20.50</O2><FLOW>95</FLOW><ALL_PD>1</ALL_PD><JCXH>1</JCXH></Row></Result></Request>";
             var result = RegexXML.MatchProterty(xml, "Request Name");
-            Assert.Equal("CMD_CHECKSELF_LLJ",result);
+            Assert.Equal("CMD_CHECKSELF_LLJ", result);
             result = RegexXML.MatchProterty(xml, "Method");
             GenerateSql<Moc>.Query("ID");
         }
@@ -115,6 +117,37 @@ namespace Live0xUtilsTest
                     }
                 }
             }
+        }
+
+        [Fact]
+        public bool RegText()
+        {
+            //\u4e00   \u9fa5
+            //^[A-Za-z0-9]+@[A-Za-z0-9]+.com
+            object o = 1.0000M;
+            if (o == null)
+                return false;
+            string s = o.ToString();
+            if (string.IsNullOrEmpty(s))
+                return false;
+            Regex regex = new Regex(@"^(\d{1})[a-zB][A-Z]{2}$");
+            bool succ = regex.IsMatch(s);
+            return succ;
+
+        }
+
+        [Fact]
+        public void TestWebservice()
+        {
+            Live0xUtils.WebServiceUtils.WebServiceHelper webServiceHelper = new Live0xUtils.WebServiceUtils.WebServiceHelper();
+            Hashtable hashtable = new Hashtable();
+            hashtable.Add("arg0", "1");
+         string s =    webServiceHelper.SoapMethod("http://webservice.ajxm.anche.com/", "http://192.168.2.233:9080/web", "query", hashtable,false);
+            string s1 = webServiceHelper.SoapMethod("http://webservice.ajxm.anche.com/", "http://192.168.2.233:9080/web", "query", hashtable);
+            string s12 = webServiceHelper.SoapMethod("www.yzslz.com/", "http://192.168.2.233/Hello.asmx", "HelloWorld", null, false);
+            string s13 = webServiceHelper.SoapMethod("www.yzslz.com/", "http://192.168.2.233/Hello.asmx", "HelloWorld", null, true);
+            int i = 0;
+            //webServiceHelper.EncodeParaToSoap("Add","www.yzslz.com", hashtable);
         }
 
         public class Moc
