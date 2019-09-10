@@ -12,6 +12,9 @@ using System.Linq;
 using L = Live0xUtils.DbUtils.SqlServer.SqlHelper;
 using System.Text.RegularExpressions;
 using System.Collections;
+using Live0xUtils.QRCodeUtils;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Live0xUtilsTest
 {
@@ -132,6 +135,7 @@ namespace Live0xUtilsTest
                 return false;
             Regex regex = new Regex(@"^(\d{1})[a-zB][A-Z]{2}$");
             bool succ = regex.IsMatch(s);
+            Moc moc = new Moc();
             return succ;
 
         }
@@ -150,9 +154,31 @@ namespace Live0xUtilsTest
             //webServiceHelper.EncodeParaToSoap("Add","www.yzslz.com", hashtable);
         }
 
+        [Fact]
+        public void TestIDbHelper()
+        {
+            Bitmap bitmap =  QRCodeHelper.CreateCode("www.baidu.com", 5, 5, true);
+            bitmap.Save("Text.png",ImageFormat.Png);
+            Live0xUtils.DbUtils.SqlServer.MssqlHelper mssqlHelper = Live0xUtils.DbUtils.SqlServer.MssqlHelper.GetInstance();
+            mssqlHelper.Init(".","IVS30","sa","123456   ");
+            Hashtable hashtable = new Hashtable();
+            hashtable.Add("HPHM", "½úKHH185");
+            //Moc moc = mssqlHelper.Query<Moc>("SELECT * FROM LOGIN_VEHICLE_INFO WHERE HPHM = @HPHM", hashtable);
+           object o = mssqlHelper.QueryObject("SELECT SYR FROM LOGIN_VEHICLE_INFO WHERE HPHM = @HPHM", hashtable);
+            string u = (string)o;
+            int j = 0;
+           
+        }
+
         public class Moc
         {
             public int? ID { get; set; }
+
+            public string HPHM { get; set; }
+
+            public string VIN { get; set; }
+
+            public string SYR { get; set; }
         }
     }
 }
