@@ -239,8 +239,7 @@ namespace Live0xUtils.DbUtils
                 sqlConnection.Open();
                 int i = sqlCommand.ExecuteNonQuery();
                 sqlCommand.Parameters.Clear();
-                return i == 1;
-                
+                return i == 1;               
             }
         }
 

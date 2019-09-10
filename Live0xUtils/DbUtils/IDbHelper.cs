@@ -9,11 +9,9 @@ namespace Live0xUtils.DbUtils
 {
     interface IDbHelper
     {
-        void Init();
+        void Init(string server,string database,string user,string password);
 
         bool Connect();
-
-        int ExcuteNonQuery(string sql, Hashtable hashtable);
 
         bool Insert<T>(T t,string[] ignoreFields,string tableName="");
 
@@ -23,11 +21,14 @@ namespace Live0xUtils.DbUtils
 
         bool InsertOrUpdate<T>(T t,string[] keys, string[] ignoreFields, string tableName = "");
 
-        DataTable ExcuteDataTable(string sql, Hashtable hashtable);
+        T Query<T>(string commandText, Hashtable hashtable);
 
-        IEnumerable<T> ExcuteList<T>(string sql, Hashtable hashtable);
+        IEnumerable<T> QueryList<T>(string commandText, Hashtable hashtable);
 
+        DataTable QueryTable(string commandText, Hashtable hashtable);
 
+        object QueryObject(string commandText, Hashtable hashtable);
 
+        int ExcuteNonQuery(string commandText, Hashtable hashtable);
     }
 }
