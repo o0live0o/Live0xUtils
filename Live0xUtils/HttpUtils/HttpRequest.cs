@@ -13,9 +13,19 @@ namespace Live0xUtils.HttpUtils
 
         public string HttpPost(string url,string content)
         {
+            return Request(url, content, "POST");
+        }
+
+        public string HttpGet(string url, string content)
+        {
+            return Request(url,content,"GET");
+        }
+
+        public string Request(string url, string content, string type)
+        {
             HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
             httpWebRequest.ContentType = FORM_URLENCODE;
-            httpWebRequest.Method = "POST";
+            httpWebRequest.Method = type;
             byte[] b = System.Text.Encoding.UTF8.GetBytes(content);
             httpWebRequest.ContentLength = b.Length;
             Stream writer;
@@ -28,13 +38,13 @@ namespace Live0xUtils.HttpUtils
                 throw;
             }
 
-            writer.Write(b,0,b.Length);
+            writer.Write(b, 0, b.Length);
             writer.Close();
 
             HttpWebResponse httpWebResponse;
             try
             {
-                httpWebResponse =(HttpWebResponse)httpWebRequest.GetResponse();
+                httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
             }
             catch (WebException we)
             {
@@ -49,5 +59,6 @@ namespace Live0xUtils.HttpUtils
 
             return s;
         }
+
     }
 }

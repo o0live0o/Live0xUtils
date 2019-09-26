@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
@@ -281,6 +282,30 @@ namespace Live0xUtils.DbUtils.Sqlite
             sQLiteDataAdapter.Fill(dt);
             int i = 0;
 
+        }
+
+        public object QueryObject(string commandText, Hashtable hashtable)
+        {
+            Monitor.Enter(lockObj);
+            using (SQLiteConnection sqlConnection = new SQLiteConnection(_conStr))
+            {
+                try
+                {
+                    sqlConnection.Open();
+                    using (SQLiteCommand sqlCommand = new SQLiteCommand(commandText, sqlConnection))
+                    {        
+                        object o = sqlCommand.ExecuteScalar();
+                        sqlCommand.Parameters.Clear();
+                        Monitor.Exit(lockObj);
+                        return o;
+                    }
+                }
+                catch (Exception)
+                {
+                    Monitor.Exit(lockObj);
+                    throw;
+                }
+            }
         }
     }
 }
