@@ -44,7 +44,7 @@ namespace Live0xUtils.XMLUtils
         }
 
 
-        public string CreateXML<T>(T t,string RootName)
+        public static string CreateXML<T>(T t,string RootName)
         {
             XmlDocument xmlDoc = new XmlDocument();
             PropertyInfo[] propertyInfos = t.GetType().GetProperties();
@@ -52,14 +52,14 @@ namespace Live0xUtils.XMLUtils
             XmlNode decNode = xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
             xmlDoc.AppendChild(decNode);
 
-            XmlElement root = xmlDoc.CreateElement("root");
+            XmlElement root = xmlDoc.CreateElement(RootName);
             xmlDoc.AppendChild(root);
 
             foreach (PropertyInfo p in propertyInfos)
             {
-                object[] obj = p.GetCustomAttributes(true);
-                if (obj.Length > 0)
-                {
+               // object[] obj = p.GetCustomAttributes(true);
+              //  if (obj.Length > 0)
+                //{
                     //EDescription eDescription = (EDescription)obj[0];
                     XmlNode xmlNode = xmlDoc.SelectSingleNode("//" + RootName);
                     if (xmlNode == null)
@@ -69,19 +69,182 @@ namespace Live0xUtils.XMLUtils
                     }
                     XmlElement xmlElement = GetXmlElement(xmlDoc, p.Name, p.GetValue(t, null) == null ? "" : Convert.ToString(p.GetValue(t, null)));
                     xmlNode.AppendChild(xmlElement);
-                }
+               // }
             }
             return xmlDoc.OuterXml;
         }
 
-        public XmlElement GetXmlElement(XmlDocument doc, string elementName, string value)
+        public static string CreateXMLEx<T>(T t, string RootName)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+            PropertyInfo[] propertyInfos = t.GetType().GetProperties();
+
+            XmlNode decNode = xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
+            xmlDoc.AppendChild(decNode);
+
+            XmlElement root = xmlDoc.CreateElement(RootName);
+            xmlDoc.AppendChild(root);
+
+            foreach (PropertyInfo p in propertyInfos)
+            {
+                if (p.PropertyType.Name.StartsWith("List"))
+                {
+                    string j = p.Name;
+                }
+                else
+                {
+                    string s = p.Name;
+                }
+                //XmlElement xmlElement = GetXmlElement(xmlDoc, p.Name, p.GetValue(t, null) == null ? "" : Convert.ToString(p.GetValue(t, null)));
+
+                //XEleAttribute xEleAttribute = p.GetCustomAttributes(typeof(XEleAttribute), false).FirstOrDefault() as XEleAttribute;
+                //if (xEleAttribute != null && string.IsNullOrEmpty(xEleAttribute.Ele))
+                //{
+                //    XmlNode xmlNode = null; = xmlDoc.SelectSingleNode("//" + RootName);
+                //    if (xmlNode == null)
+                //    {
+                //        xmlNode = xmlDoc.CreateElement(RootName);
+                //        root.AppendChild(xmlNode);
+                //    }
+                //    xmlNode.AppendChild(xmlElement);
+                //}
+                //else
+                //{
+                //    root.AppendChild(xmlElement);
+                //}
+            }
+            return xmlDoc.OuterXml;
+        }
+
+        //public static string CreateXMLEx3(object obj, string RootName)
+        //{
+        //    XmlDocument xmlDoc = new XmlDocument();
+        //    XmlNode decNode = xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
+        //    xmlDoc.AppendChild(decNode);
+        //    CreateXMLEx4( obj, RootName, xmlDoc);
+        //    return xmlDoc.OuterXml;
+        //}
+
+        //public static void CreateXMLEx4(object obj, string RootName, XmlDocument xmlDocument,XmlElement root)
+        //{
+        //    if (obj == null) return;
+        //    Type tinfo = obj.GetType();
+        //    PropertyInfo[] pInfos = tinfo.GetProperties();
+        //    if (tinfo.IsGenericType)
+        //    {
+        //        System.Collections.ICollection list = obj as System.Collections.ICollection;
+        //        if (list != null)
+        //        {
+        //            foreach (var item in list)
+        //            {
+        //                XEleAttribute xEleAttribute = tinfo.GetCustomAttributes(typeof(XEleAttribute), false).FirstOrDefault() as XEleAttribute;
+        //                CreateXMLEx4(item, xEleAttribute.Ele, xmlDocument, root);
+        //            }
+        //        }
+        //        return;
+        //    }
+        //}
+
+        public static string CreateXMLEx0(object obj,string RootName)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+            PropertyInfo[] propertyInfos = obj.GetType().GetProperties();
+
+            XmlNode decNode = xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
+            xmlDoc.AppendChild(decNode);
+
+            XmlElement root = xmlDoc.CreateElement(RootName);
+            xmlDoc.AppendChild(root);
+            CreateXMLEx1(obj,xmlDoc,root);
+            return xmlDoc.OuterXml;
+        }
+
+        private static void CreateXMLEx1(object obj, XmlDocument xmlDoc, XmlElement root)
+        {
+            XmlElement rootElement = null;
+            if (obj == null) return;
+            Type tinfo = obj.GetType();
+            PropertyInfo[] pInfos = tinfo.GetProperties();
+            if (tinfo.IsGenericType)
+            {
+                System.Collections.ICollection list = obj as System.Collections.ICollection;
+                if (list != null)
+                {
+                    foreach (var item in list)
+                    {
+                        CreateXMLEx1(item, xmlDoc, root);
+                    }
+                }
+                return;
+            }
+            XEleAttribute rootEleAttribute = tinfo.GetCustomAttributes(typeof(XEleAttribute), false).FirstOrDefault() as XEleAttribute;
+            if (rootEleAttribute != null && rootEleAttribute.Ele != null)
+            {
+                rootElement = xmlDoc.CreateElement(rootEleAttribute.Ele);
+            }
+
+            foreach (PropertyInfo info in pInfos)
+            {
+                XEleAttribute xEleAttribute = info.GetCustomAttributes(typeof(XEleAttribute), false).FirstOrDefault() as XEleAttribute;
+                if (info.PropertyType.Name.StartsWith("List"))
+                {
+                    object o = info.GetValue(obj, null);
+                    if (xEleAttribute != null && !string.IsNullOrEmpty(xEleAttribute.Ele))
+                    {
+                        XmlNode xmlNode =rootElement != null ?  rootElement.SelectSingleNode("//" + xEleAttribute.Ele) : root.SelectSingleNode("//" + xEleAttribute.Ele);
+                        if (xmlNode == null)
+                        {
+                            XmlElement xmlElement = xmlDoc.CreateElement(xEleAttribute.Ele);
+                            CreateXMLEx1(o, xmlDoc, xmlElement);
+                            if(rootElement != null )
+                                rootElement.AppendChild(xmlElement) ;
+                            else
+                                root.AppendChild(xmlElement);
+                        }
+                    }
+                    else
+                    {
+                        CreateXMLEx1(o, xmlDoc , rootElement != null ? rootElement : root);
+                    }
+                }
+                else
+                {
+
+                    XmlElement xmlElement = GetXmlElement(xmlDoc, info.Name, info.GetValue(obj, null) == null ? "" : Convert.ToString(info.GetValue(obj, null)));
+                    if (xEleAttribute != null && !string.IsNullOrEmpty(xEleAttribute.Ele))
+                    {
+                         XmlNode xmlNode = rootElement != null ? rootElement.SelectSingleNode("//" + xEleAttribute.Ele) : root.SelectSingleNode("//" + xEleAttribute.Ele);
+                        if (xmlNode == null)
+                        {
+                            xmlNode = xmlDoc.CreateElement(xEleAttribute.Ele);
+                            if (rootElement != null)
+                                rootElement.AppendChild(xmlElement);
+                            else
+                                root.AppendChild(xmlElement);
+                        }
+                        xmlNode.AppendChild(xmlElement);
+                    }
+                    else
+                    {
+                        if (rootElement != null)
+                            rootElement.AppendChild(xmlElement);
+                        else
+                            root.AppendChild(xmlElement);
+                    }
+                }
+            }
+            if (rootElement != null)
+                root.AppendChild(rootElement);
+        }
+
+        public static XmlElement GetXmlElement(XmlDocument doc, string elementName, string value)
         {
             XmlElement element = doc.CreateElement(elementName);
             element.InnerText = value;
             return element;
         }
 
-        public string GetXmlValue(string strXml, string strEle)
+        public static string GetXmlValue(string strXml, string strEle)
         {
             string strResult = "";
             Match match = Regex.Match(strXml, @"<" + strEle + @">(?<Value>[\s\S]*?)</" + strEle + ">");
@@ -93,7 +256,7 @@ namespace Live0xUtils.XMLUtils
             return strResult;
         }
 
-        public T FillEntityByXml<T>(string strXml)
+        public static T FillEntityByXml<T>(string strXml)
         {
             T t = Activator.CreateInstance<T>();
             try

@@ -15,6 +15,8 @@ using System.Collections;
 using Live0xUtils.QRCodeUtils;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Live0xUtilsTest
 {
@@ -168,6 +170,25 @@ namespace Live0xUtilsTest
             string u = (string)o;
             int j = 0;
            
+        }
+
+        [Fact]
+        public void TestGetField()
+        {
+            string s= File.ReadAllText("Text.json");
+            JArray o =  (JArray)JsonConvert.DeserializeObject(s);
+
+            StringBuilder str = new StringBuilder();
+            foreach (JObject jObject in o)
+            {
+                foreach (var item in jObject)
+                {
+                    str.Append(item.Key + ":" + item.Value + "|,|" + "\r\n");
+                }
+            }
+            File.WriteAllText("TTTT.txt", str.ToString()); ;
+            int j = 0;
+
         }
 
         public class Moc

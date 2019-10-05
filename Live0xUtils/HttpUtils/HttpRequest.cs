@@ -28,6 +28,7 @@ namespace Live0xUtils.HttpUtils
             httpWebRequest.Method = type;
             byte[] b = System.Text.Encoding.UTF8.GetBytes(content);
             httpWebRequest.ContentLength = b.Length;
+            
             Stream writer;
             try
             {
