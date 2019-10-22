@@ -226,11 +226,11 @@ namespace Live0xUtils.DbUtils
             string tableName = typeof(T).Name;
             string filed = "";
             string val = "";
-            filed = string.Join(",", typeof(T).GetProperties().FilterKey().Select(p => $"[{p.Name}]"));
-            val = string.Join(",", typeof(T).GetProperties().FilterKey().Select(p => $"@{p.Name}"));
+            filed = string.Join(",", typeof(T).GetProperties().FilterKey().FilterIgnore().Select(p => $"[{p.Name}]"));
+            val = string.Join(",", typeof(T).GetProperties().FilterKey().FilterIgnore().Select(p => $"@{p.Name}"));
             string sql = $"INSERT INTO [{tableName}]({filed}) values ({val}) ";
 
-            var parameters = typeof(T).GetProperties().FilterKey().Select(p => new SqlParameter($"@{p.Name}", p.GetValue(t, null) ?? DBNull.Value));
+            var parameters = typeof(T).GetProperties().FilterKey().FilterIgnore().Select(p => new SqlParameter($"@{p.Name}", p.GetValue(t, null) ?? DBNull.Value));
 
             using (SqlConnection sqlConnection = new SqlConnection(_conStr))
             {
@@ -270,7 +270,7 @@ namespace Live0xUtils.DbUtils
         {
             string tableName = typeof(T).Name;
             string filed = "";
-            filed = string.Join(",", typeof(T).GetProperties().FilterKey().Where(p => p.Name.ToUpper() != key.ToUpper()).Select(p => $"[{p.Name}] = @{p.Name}"));
+            filed = string.Join(",", typeof(T).GetProperties().FilterKey().FilterIgnore().Where(p => p.Name.ToUpper() != key.ToUpper()).Select(p => $"[{p.Name}] = @{p.Name}"));
             string sql = $"UPDATE [{tableName}] SET {filed} WHERE [{key}] = @{key} ";
             var parameters = typeof(T).GetProperties().Select(p => new SqlParameter($"@{p.Name}", p.GetValue(t, null) ?? DBNull.Value));
             using (SqlConnection sqlConnection = new SqlConnection(_conStr))

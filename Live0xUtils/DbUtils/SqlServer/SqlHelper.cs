@@ -15,6 +15,11 @@ namespace Live0xUtils.DbUtils.SqlServer
 
         private SqlHelper() { }
 
+        public static string CreateConstr(string dbServer,string dbName, string dbUser, string dbPwd)
+        {
+            return $"Server = {dbServer};Initial Catalog = {dbName};User Id = {dbUser};Password = {dbPwd};";
+        }
+
         /// <summary>
         /// 将SqlParameter参数数组(参数值)分配给SqlCommand命令.
         /// 这个方法将给任何一个参数分配DBNull.Value;

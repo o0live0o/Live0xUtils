@@ -51,7 +51,7 @@ namespace Live0xUtils.WebServiceUtils
             }
             catch (Exception ex)
             {
-                result = ex.Message;
+                result ="发送异常"+ ex.Message;
             }
             return result;
         }

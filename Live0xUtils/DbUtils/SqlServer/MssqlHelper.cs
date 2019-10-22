@@ -228,6 +228,8 @@ namespace Live0xUtils.DbUtils.SqlServer
                 }
             }
         }
+
+        
         #endregion
 
         private void PrepareParameters(List<SqlParameter> sqlParameters, Hashtable hashtable)
@@ -236,9 +238,7 @@ namespace Live0xUtils.DbUtils.SqlServer
                 return;
             foreach (string key in hashtable.Keys)
             {
-                if (hashtable[key] == null)
-                    hashtable[key] = DBNull.Value;
-                SqlParameter sqlParameter = new SqlParameter() { ParameterName = "@" + key, Value = hashtable[key] };
+                SqlParameter sqlParameter = new SqlParameter() { ParameterName = "@" + key, Value = hashtable[key] ?? DBNull.Value };
                 sqlParameters.Add(sqlParameter);
             }
         }

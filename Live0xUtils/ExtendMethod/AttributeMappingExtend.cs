@@ -15,6 +15,11 @@ namespace Live0xUtils.ExtendMethod
             return properties.Where(p=>!p.IsDefined(typeof(KeyFieldAttribute),true));
         }
 
+        public static IEnumerable<PropertyInfo> FilterIgnore(this IEnumerable<PropertyInfo> properties)
+        {
+            return properties.Where(p => !p.IsDefined(typeof(IgnoreFieldAttribute), true));
+        }
+
         public static object SD_ChanageType(this object value, Type convertsionType)
         {
             //判断convertsionType类型是否为泛型，因为nullable是泛型类,

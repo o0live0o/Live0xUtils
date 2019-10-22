@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="ConfigUtils\ReadAppConfig.cs" />
     <Compile Include="DbUtils\Attributes\AbstractAttribute.cs" />
+    <Compile Include="DbUtils\Attributes\IgnoreFieldAttribute.cs" />
     <Compile Include="DbUtils\Attributes\KeyFieldAttribute.cs" />
     <Compile Include="DbUtils\Attributes\RegAttribute.cs" />
     <Compile Include="DbUtils\GenerateParams.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="DbUtils\SqlServer\FillHelper.cs" />
     <Compile Include="DbUtils\SqlServer\MssqlHelper.cs" />
     <Compile Include="DbUtils\SqlServer\SqlHelper.cs" />
+    <Compile Include="Encryption\EncryptionMD5.cs" />
     <Compile Include="ExtendMethod\AttributeMappingExtend.cs" />
     <Compile Include="FormUI\LiveForm.cs">
       <SubType>Form</SubType>
