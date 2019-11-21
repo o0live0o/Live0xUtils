@@ -75,6 +75,7 @@
     <Compile Include="DbUtils\GenerateParams.cs" />
     <Compile Include="DbUtils\GenerateSql.cs" />
     <Compile Include="DbUtils\IDbHelper.cs" />
+    <Compile Include="DbUtils\IDbHelperDeveloper.cs" />
     <Compile Include="DbUtils\MssqlHelper.cs" />
     <Compile Include="DbUtils\Sqlite\SqliteHelper.cs" />
     <Compile Include="DbUtils\SqlServer\FillHelper.cs" />
@@ -82,6 +83,13 @@
     <Compile Include="DbUtils\SqlServer\SqlHelper.cs" />
     <Compile Include="Encryption\EncryptionMD5.cs" />
     <Compile Include="ExtendMethod\AttributeMappingExtend.cs" />
+    <Compile Include="FileUtils\IniHelper.cs" />
+    <Compile Include="FormUI\AutoDocker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FormUI\AutoDocker.Designer.cs">
+      <DependentUpon>AutoDocker.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormUI\LiveForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,6 +112,8 @@
     <Compile Include="RegexUtils\MatchR.cs" />
     <Compile Include="RegexUtils\RegexText.cs" />
     <Compile Include="RegexUtils\RegexXML.cs" />
+    <Compile Include="WebServiceUtils\WebServiceHelper3.cs" />
+    <Compile Include="WebServiceUtils\WebServiceHelper2.cs" />
     <Compile Include="WebServiceUtils\WebServiceHelper.cs" />
     <Compile Include="XMLUtils\XEleAttribute.cs" />
     <Compile Include="XMLUtils\XMLHelper.cs" />

@@ -227,9 +227,7 @@ namespace Live0xUtils.DbUtils.SqlServer
                     throw;
                 }
             }
-        }
-
-        
+        }        
         #endregion
 
         private void PrepareParameters(List<SqlParameter> sqlParameters, Hashtable hashtable)

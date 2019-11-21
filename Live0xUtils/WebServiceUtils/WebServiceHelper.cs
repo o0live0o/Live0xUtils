@@ -24,7 +24,7 @@ namespace Live0xUtils.WebServiceUtils
                 if (hasSOAPAction)
                     httpWebRequest.Headers.Add("SOAPAction", "\"" + nameSpace + (nameSpace.EndsWith("/") ? "" : "/") + method + "\"");
                 httpWebRequest.Credentials = CredentialCache.DefaultCredentials;
-                httpWebRequest.Timeout = 10000;
+                httpWebRequest.Timeout = 30000;
 
                 byte[] sendData = EncodeParaToSoap(method, nameSpace, iparams);
 

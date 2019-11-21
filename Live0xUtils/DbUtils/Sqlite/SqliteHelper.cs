@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Live0xUtils.DbUtils.Attributes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 
@@ -190,8 +192,26 @@ namespace Live0xUtils.DbUtils.Sqlite
             bool succ = false;
             string tableName = typeof(T).Name;
             string filed = "";
-            filed = string.Join(",", typeof(T).GetProperties().Where(p => p.Name.ToUpper() != key.ToUpper() && p.Name.ToUpper() != "ID").Select(p => $"[{p.Name}] = @{p.Name}"));
-            string sql = $"UPDATE [{tableName}] SET {filed} WHERE [{key}] = @{key} ";
+
+            PropertyInfo[] propertyInfos = t.GetType().GetProperties();
+            List<string> keyList = new List<string>();
+            if (!string.IsNullOrEmpty(key))
+                keyList.Add(key);
+            foreach (var keyItem in propertyInfos)
+            {
+                KeyFieldAttribute keyFieldAttribute = keyItem.GetCustomAttributes(typeof(KeyFieldAttribute), false).FirstOrDefault() as KeyFieldAttribute;
+                if (keyFieldAttribute != null)
+                {
+                    keyList.Add(keyItem.Name);
+                }
+            }
+
+            filed = string.Join(",", typeof(T).GetProperties().Where(p => !keyList.Contains(p.Name) && p.Name.ToUpper() != "ID").Select(p => $"[{p.Name}] = @{p.Name}"));
+            string sql = $"UPDATE [{tableName}] SET {filed} WHERE 1 = 1 ";
+            foreach (string keyStr in keyList)
+            {
+                sql += $" AND [{keyStr}] = @{keyStr} ";
+            }
             var parameters = typeof(T).GetProperties().Select(p => new SQLiteParameter($"@{p.Name}", p.GetValue(t, null) ?? DBNull.Value));
             using (SQLiteConnection sqlConnection = new SQLiteConnection(_conStr))
             {
@@ -225,7 +245,7 @@ namespace Live0xUtils.DbUtils.Sqlite
                 using (SQLiteCommand sqlCommand = new SQLiteCommand(sql, sqlConnection))
                 {
                     sqlCommand.Parameters.AddRange(parameters.ToArray());
-                    i    = sqlCommand.ExecuteNonQuery();
+                    i  = sqlCommand.ExecuteNonQuery();
                 }
                 sqlConnection.Close();
 
@@ -237,7 +257,23 @@ namespace Live0xUtils.DbUtils.Sqlite
         private bool Exist<T>(T t, string key)
         {
             string tableName = typeof(T).Name;
-            string sql = $"SELECT * FROM {tableName} WHERE {key} = @{key}";
+            PropertyInfo[] propertyInfos = t.GetType().GetProperties();
+            List<string> keyList = new List<string>();
+            if (!string.IsNullOrEmpty(key))
+                keyList.Add(key);
+            foreach (var keyItem in propertyInfos)
+            {
+                KeyFieldAttribute keyFieldAttribute = keyItem.GetCustomAttributes(typeof(KeyFieldAttribute), false).FirstOrDefault() as KeyFieldAttribute;
+                if (keyFieldAttribute != null)
+                {
+                    keyList.Add(keyItem.Name);
+                }
+            }
+            string sql = $"SELECT * FROM {tableName} WHERE 1 = 1";
+            foreach (string keyStr in keyList)
+            {
+                sql += $" AND {keyStr} = @{keyStr} ";
+            }
             bool succ = false;
             var parameters = typeof(T).GetProperties().Select(p => new SQLiteParameter($"@{p.Name}", p.GetValue(t, null) ?? DBNull.Value));
             using (SQLiteConnection sqlConnection = new SQLiteConnection(_conStr))
