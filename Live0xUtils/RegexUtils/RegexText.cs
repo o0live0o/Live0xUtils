@@ -25,5 +25,10 @@ namespace Live0xUtils.RegexUtils
             }
             return "";
         }
+
+        public static string ReplaceChinese(string src)
+        {
+            return src.Replace(@"(\s[\u4E00 - \u9FA5] +) | ([\u4E00 - \u9FA5] +\s)",""); 
+        }
     }
 }

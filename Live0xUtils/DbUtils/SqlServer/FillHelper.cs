@@ -14,7 +14,7 @@ namespace Live0xUtils.DbUtils.SqlServer
             PropertyInfo[] infos = t.GetType().GetProperties();
             foreach (var item in infos)
             {
-                if (ExistField(dr, item.Name))
+                if (item.CanWrite && ExistField(dr, item.Name))
                 {
                     try
                     {

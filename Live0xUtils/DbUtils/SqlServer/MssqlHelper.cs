@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Live0xUtils.ExtendMethod;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Live0xUtils.DbUtils.SqlServer
@@ -34,6 +36,54 @@ namespace Live0xUtils.DbUtils.SqlServer
         public bool Connect()
         {
             throw new NotImplementedException();
+        }
+
+        public void CreateDb()
+        {
+            string con = $"server={_server};User Id={_user};Password={_password};";
+            string sql = $"SELECT database_id from sys.databases WHERE Name  = '{_database}'";
+            using (SqlConnection sqlConnection = new SqlConnection(con))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand(sql, sqlConnection))
+                {
+                    sqlConnection.Open();
+                   object o =  sqlCommand.ExecuteScalar();
+                    int i = 0;
+                    if (null != o)
+                    {
+                        int.TryParse(o.ToString(), out i);
+                    }
+                    if (i <= 0)
+                    {
+                        sql = $"create database {_database}";
+                        sqlCommand.CommandText = sql;
+                        sqlCommand.ExecuteNonQuery();
+                    }
+                    sqlConnection.Close();
+                }
+            }
+        }
+
+        public void CreateTable<T>(string tableName = "")
+        {
+            if (string.IsNullOrEmpty(tableName))
+                tableName = typeof(T).Name;
+            string field = "";
+
+            PropertyInfo[] propertyInfos = typeof(T).GetProperties();
+            foreach (var item in propertyInfos)
+            {
+                if (item.CanWrite)
+                {
+                    string fieldType = "varchar(50)";
+                    if(string.IsNullOrEmpty(field))
+                       field += $"[{item.Name}]  varchar(50)  DEFAULT '' NOT NULL  ";
+                    else
+                        field += $",[{item.Name}]  varchar(50)  DEFAULT '' NOT NULL  ";
+                }
+            }
+            string sql = $"CREATE TABLE {tableName} ({field})";
+
         }
 
         public int ExcuteNonQuery(string commandText, Hashtable hashtable)
@@ -90,8 +140,8 @@ namespace Live0xUtils.DbUtils.SqlServer
                 tableName = typeof(T).Name;
             string filed = "";
             string val = "";
-            filed = string.Join(",", typeof(T).GetProperties().Where(p => !ignoreFields.Contains(p.Name)).Select(p => $"[{p.Name}]"));
-            val = string.Join(",", typeof(T).GetProperties().Where(p => !ignoreFields.Contains(p.Name)).Select(p => $"@{p.Name}"));
+            filed = string.Join(",", typeof(T).GetProperties().FilterKey().FilterIgnore().Where(p => p.CanWrite && !ignoreFields.Contains(p.Name)).Select(p => $"[{p.Name}]"));
+            val = string.Join(",", typeof(T).GetProperties().FilterKey().FilterIgnore().Where(p => p.CanWrite && !ignoreFields.Contains(p.Name)).Select(p => $"@{p.Name}"));
             string sql = $"INSERT INTO [{tableName}]({filed}) values ({val}) ";
 
             using (SqlConnection sqlConnection = new SqlConnection(_connectionStr))
@@ -106,6 +156,18 @@ namespace Live0xUtils.DbUtils.SqlServer
 
         public bool InsertOrUpdate<T>(T t, Hashtable hashtable, string[] keys, string[] ignoreFields, string tableName = "")
         {
+            if (ignoreFields == null)
+            {
+                ignoreFields = (from p in t.GetType().GetProperties()
+                                         where p.GetValue(t, null) == null || string.IsNullOrEmpty(p.GetValue(t, null).ToString())
+                                         select p.Name).ToArray();
+                if (ignoreFields == null) ignoreFields = new string[] { };
+            }
+            if (hashtable == null)
+            {
+                hashtable = new Hashtable();
+                t.GetType().GetProperties().ToList().ForEach(p => hashtable.Add($"{p.Name}", p.GetValue(t, null)));
+            }
             if (Exist<T>(t, hashtable, keys, tableName))
             {
                 return Update<T>(t, hashtable, keys, ignoreFields, tableName);
@@ -195,7 +257,7 @@ namespace Live0xUtils.DbUtils.SqlServer
              if(string.IsNullOrEmpty(tableName))
                 tableName = typeof(T).Name;
             string filed = "";
-            filed = string.Join(",", typeof(T).GetProperties().Where(p => !keys.Contains(p.Name) && !ignoreFields.Contains(p.Name)).Select(p => $"[{p.Name}] = @{p.Name}"));
+            filed = string.Join(",", typeof(T).GetProperties().FilterKey().FilterIgnore().Where(p =>p.CanWrite &&  !keys.Contains(p.Name) && !ignoreFields.Contains(p.Name)).Select(p => $"[{p.Name}] = @{p.Name}"));
 
             string sql = $"UPDATE [{tableName}] SET {filed} WHERE 1 = 1 ";
             foreach (string item in keys)
