@@ -113,8 +113,6 @@
     <Compile Include="RegexUtils\MatchR.cs" />
     <Compile Include="RegexUtils\RegexText.cs" />
     <Compile Include="RegexUtils\RegexXML.cs" />
-    <Compile Include="WebServiceUtils\WebServiceHelper3.cs" />
-    <Compile Include="WebServiceUtils\WebServiceHelper2.cs" />
     <Compile Include="WebServiceUtils\WebServiceHelper.cs" />
     <Compile Include="XMLUtils\XEleAttribute.cs" />
     <Compile Include="XMLUtils\XMLHelper.cs" />
