@@ -71,7 +71,23 @@ namespace Live0xUtilsTest
             //L.init("IVS30","sa","123456",".");
             //L.ExecuteNonQuery(,);
             //string xml = File.ReadAllText("ASM.txt",Encoding.Default);
-            //Live0xUtils.XMLUtils.XMLHelper.XMLToList<Moc>(xml, "ProcessData");
+            //Live0xUtils.XMLUtils.XMLHelper.XMLToList<Moc>(xml, "ProcessData");       
+            string s = "T200309P90941140028-03";
+            List<string> lstJCLSH = new List<string>();
+
+            if (s.Contains("-"))
+            {
+                string[] strInfos = s.Split('-');
+                int iJCCS = Convert.ToInt32(strInfos[1]) + 1;
+                for (int i = 1; i < iJCCS; i++)
+                {
+                    lstJCLSH.Add(strInfos[0] + "-" + i.ToString("d2"));
+                }
+            }
+            else
+            {
+                lstJCLSH.Add(s);
+            }
         }
 
         [Fact]

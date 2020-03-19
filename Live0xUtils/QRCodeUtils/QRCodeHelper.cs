@@ -33,11 +33,19 @@ namespace Live0xUtils.QRCodeUtils
             return bmp;
         }
 
+        /// <summary>
+        /// 生成二维码
+        /// </summary>
+        /// <param name="msg">信息</param>
+        /// <param name="version">版本 1 ~ 40</param>
+        /// <param name="pixel">像素点大小</param>
+        /// <param name="white_edge">二维码白边</param>
+        /// <returns>位图</returns>
         public static Bitmap CreateCode(string msg, int version, int pixel, bool white_edge)
         {
 
             QRCoder.QRCodeGenerator code_generator = new QRCoder.QRCodeGenerator();
-            QRCoder.QRCodeData code_data = code_generator.CreateQrCode(msg, QRCoder.QRCodeGenerator.ECCLevel.M/* 这里设置容错率的一个级别 */, true, true, QRCoder.QRCodeGenerator.EciMode.Utf8, version);
+            QRCoder.QRCodeData code_data = code_generator.CreateQrCode(msg, QRCoder.QRCodeGenerator.ECCLevel.M, true, true, QRCoder.QRCodeGenerator.EciMode.Utf8, version);
             QRCoder.QRCode code = new QRCoder.QRCode(code_data);
 
             Bitmap bmp = code.GetGraphic(pixel, Color.Black, Color.White, white_edge);

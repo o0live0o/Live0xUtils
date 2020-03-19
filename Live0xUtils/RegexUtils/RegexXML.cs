@@ -64,7 +64,7 @@ namespace Live0xUtils.RegexUtils
                         catch (Exception ex)
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine(p.Name+"_XMLToModel_"+ ex.Message);
+                            Console.WriteLine(p.Name + "_XMLToModel_" + ex.Message);
                             Console.ForegroundColor = ConsoleColor.White;
                         }
                     }
@@ -74,7 +74,7 @@ namespace Live0xUtils.RegexUtils
             return t;
         }
 
-        public static List<T> XMLToList<T>(string xml, string desc,string ele)
+        public static List<T> XMLToList<T>(string xml, string desc, string ele)
         {
             List<T> lists = new List<T>();
             XDocument xDocument = XDocument.Parse(xml);
@@ -103,7 +103,7 @@ namespace Live0xUtils.RegexUtils
             return lists;
         }
 
-        public static string MatchField(string src, string field,bool defaultNull)
+        public static string MatchField(string src, string field, bool defaultNull)
         {
             Match match = Regex.Match(src, "<" + field + @">(?<Value>[\s\S]*?)</" + field + ">");
             if (match.Success)
@@ -111,6 +111,40 @@ namespace Live0xUtils.RegexUtils
                 return match.Groups["Value"].Value;
             }
             return defaultNull ? null : "";
+        }
+
+        public static T XmlToModelByName<T>(string src)
+        {
+            T t = Activator.CreateInstance<T>();
+
+            PropertyInfo[] pInfos = t.GetType().GetProperties();
+            foreach (PropertyInfo p in pInfos)
+            {
+                if (p.CanWrite)
+                {
+                    try
+                    {
+                        string val = MatchField(src, p.Name, false);
+                        if (!p.PropertyType.IsGenericType)
+                        {
+                            p.SetValue(t, Convert.ChangeType(val, p.PropertyType), null);
+                        }
+                        else
+                        {
+                            Type genericTypeDefinition = p.PropertyType.GetGenericTypeDefinition();
+                            if (genericTypeDefinition == typeof(Nullable<>))
+                            {
+                                p.SetValue(t, Convert.ChangeType(val, p.PropertyType.GetGenericArguments()[0]), null);
+                            }
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                  
+                    }
+                }
+            }
+            return t;
         }
     }
 }
