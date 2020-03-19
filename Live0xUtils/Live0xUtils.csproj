@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CloneHelper.cs" />
     <Compile Include="ConfigUtils\ReadAppConfig.cs" />
     <Compile Include="DbUtils\Attributes\AbstractAttribute.cs" />
     <Compile Include="DbUtils\Attributes\IgnoreFieldAttribute.cs" />
