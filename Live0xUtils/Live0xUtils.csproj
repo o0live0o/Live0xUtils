@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CSkin">
-      <HintPath>..\src\CSkin.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
@@ -59,6 +56,7 @@
       <HintPath>..\packages\System.Data.SQLite.Linq.1.0.111.0\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -70,6 +68,7 @@
   <ItemGroup>
     <Compile Include="CloneHelper.cs" />
     <Compile Include="ConfigUtils\ReadAppConfig.cs" />
+    <Compile Include="ConfigUtils\SoftReg.cs" />
     <Compile Include="DbUtils\Attributes\AbstractAttribute.cs" />
     <Compile Include="DbUtils\Attributes\IgnoreFieldAttribute.cs" />
     <Compile Include="DbUtils\Attributes\KeyFieldAttribute.cs" />
@@ -91,12 +90,6 @@
     </Compile>
     <Compile Include="FormUI\AutoDocker.Designer.cs">
       <DependentUpon>AutoDocker.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormUI\LiveForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormUI\LiveForm.Designer.cs">
-      <DependentUpon>LiveForm.cs</DependentUpon>
     </Compile>
     <Compile Include="HttpUtils\HttpRequest.cs" />
     <Compile Include="LogUtils\ConsoleLog.cs" />
@@ -126,9 +119,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FormUI\LiveForm.resx">
-      <DependentUpon>LiveForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
