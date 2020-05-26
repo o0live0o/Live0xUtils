@@ -224,6 +224,10 @@ namespace Live0xUtils.DbUtils.SqlServer
                 {
                     throw;
                 }
+                finally
+                {
+                    
+                }
                 return list;
             }
         }

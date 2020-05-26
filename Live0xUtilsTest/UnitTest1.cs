@@ -207,6 +207,14 @@ namespace Live0xUtilsTest
 
         }
 
+        [Fact]
+        public void TestMatch01()
+        {
+
+            string s = "2020/05/09 16:21:19 _[接收]_<?xml version=\"1.0\" encoding=\"GBK\"?></Result><Dev><FQYNAME></FQYNAME><FQYMODEL></FQYMODEL><YDJNAME>不透光烟度计</YDJNAME><YDJMODEL>MQY-202</YDJMODEL><RPMNAME>鸣泉转速计</RPMNAME><RPMMODEL>MQZ-4</RPMMODEL><NOxNAME>排放气体测试仪</NOxNAME><NOxMODEL>MQW-5102</NOxMODEL><CDMNAME>测功机</CDMNAME><CDMMODEL>CDM-300C</CDMMODEL><START_TIME>2020-05-09 16:21:19</START_TIME></Dev></Request>";
+            RegexText.MatchVal(s, @"_\[接收\]_(.*)", 2);
+        }
+
         public class Moc
         {
             public int? ID { get; set; }
