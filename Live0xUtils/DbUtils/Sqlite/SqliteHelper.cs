@@ -49,7 +49,7 @@ namespace Live0xUtils.DbUtils.Sqlite
                     return succ;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
                 //throw new Exception("打开数据库：" + _conStr + "的连接失败：" + ex.Message);
@@ -98,7 +98,7 @@ namespace Live0xUtils.DbUtils.Sqlite
                     }
                 }
             }
-            catch (Exception ex)
+            catch 
             {
                 //Console.WriteLine(ex.Message);
                 throw;
