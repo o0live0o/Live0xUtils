@@ -28,7 +28,7 @@ namespace Live0xUtils.RegexUtils
 
         public static string ReplaceChinese(string src)
         {
-            return src.Replace(@"(\s[\u4E00 - \u9FA5] +) | ([\u4E00 - \u9FA5] +\s)",""); 
+            return src.Replace(@"(\s[\u4E00-\u9FA5]+) | ([\u4E00-\u9FA5]+\s)",""); 
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -51,5 +52,6 @@ namespace Live0xUtils.DbUtils
         int InsertOrUpdate<T>(T t);
 
         int ExcuteStoredProcedure(string proc, Hashtable hashtable);
+
     }
 }

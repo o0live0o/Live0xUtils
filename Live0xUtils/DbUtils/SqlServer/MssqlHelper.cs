@@ -261,7 +261,8 @@ namespace Live0xUtils.DbUtils.SqlServer
              if(string.IsNullOrEmpty(tableName))
                 tableName = typeof(T).Name;
             string filed = "";
-            filed = string.Join(",", typeof(T).GetProperties().FilterKey().FilterIgnore().Where(p =>p.CanWrite &&  !keys.Contains(p.Name) && !ignoreFields.Contains(p.Name)).Select(p => $"[{p.Name}] = @{p.Name}"));
+            //filed = string.Join(",", typeof(T).GetProperties().FilterKey().FilterIgnore().Where(p =>p.CanWrite &&  !keys.Contains(p.Name) && !ignoreFields.Contains(p.Name)).Select(p => $"[{p.Name}] = @{p.Name}"));
+            filed = string.Join(",", typeof(T).GetProperties().Where(p =>p.CanWrite).Select(p => $"[{p.Name}] = @{p.Name}"));
 
             string sql = $"UPDATE [{tableName}] SET {filed} WHERE 1 = 1 ";
             foreach (string item in keys)

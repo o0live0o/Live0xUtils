@@ -175,12 +175,14 @@ namespace Live0xUtilsTest
         [Fact]
         public void TestIDbHelper()
         {
-            Bitmap bitmap =  QRCodeHelper.CreateCode("www.baidu.com", 5, 5, true);
-            bitmap.Save("Text.png",ImageFormat.Png);
+            //Bitmap bitmap =  QRCodeHelper.CreateCode("www.baidu.com", 5, 5, true);
+            //bitmap.Save("Text.png",ImageFormat.Png);
             Live0xUtils.DbUtils.SqlServer.MssqlHelper mssqlHelper = Live0xUtils.DbUtils.SqlServer.MssqlHelper.GetInstance();
             mssqlHelper.Init(".","IVS30","sa","123456   ");
             Hashtable hashtable = new Hashtable();
-            hashtable.Add("HPHM", "晋KHH185");
+            SyncBaseParameterEtrcarInfo syncBaseParameterMember = new SyncBaseParameterEtrcarInfo();
+            mssqlHelper.Update(syncBaseParameterMember,hashtable,null,null);
+            //hashtable.Add("HPHM", "晋KHH185");
             //Moc moc = mssqlHelper.Query<Moc>("SELECT * FROM LOGIN_VEHICLE_INFO WHERE HPHM = @HPHM", hashtable);
            object o = mssqlHelper.QueryObject("SELECT SYR FROM LOGIN_VEHICLE_INFO WHERE HPHM = @HPHM", hashtable);
             string u = (string)o;
@@ -224,6 +226,238 @@ namespace Live0xUtilsTest
             public string VIN { get; set; }
 
             public string SYR { get; set; }
+        }
+        public class IDEntity 
+        {
+            /// <summary>
+            /// 唯一标识
+            /// </summary>
+
+            public long RowId { get; set; }
+
+        }
+        public class OperationEntity : IDEntity
+        {
+            /// <summary>
+            /// 公司标识
+            /// </summary>
+            public long CompanyId { get; set; }
+
+            /// <summary>
+            /// 创建人标识
+            /// </summary>
+            public long CreatedId { get; set; }
+
+            /// <summary>
+            /// 创建人
+            /// </summary>
+            public string CreatedName { get; set; } = string.Empty;
+
+            /// <summary>
+            /// 创建时间
+            /// </summary>
+            public DateTime CreatedDate { get; set; } = DateTime.Now;
+
+            /// <summary>
+            /// 更新人编号
+            /// </summary>
+            public long UpdatedId { get; set; }
+
+            /// <summary>
+            /// 更新人
+            /// </summary>
+            public string UpdatedName { get; set; } = string.Empty;
+
+            /// <summary>
+            /// 更新日期
+            /// </summary>
+            public DateTime UpdatedDate { get; set; } = DateTime.Now;
+
+
+        }
+
+        public class SyncBaseParameterMember : OperationEntity
+        {
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string MemberCode
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string MemberName
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string MemberPyshort
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string MlinkMan
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string MidCard
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string MlinkTel
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public int MtradeType
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public int MemberPass
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string BuzlicenseNo
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public DateTime FillingDate
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Mremark
+            {
+                get;
+                set;
+            }
+
+
+        }
+
+        public class SyncBaseParameterEtrcarInfo : OperationEntity
+        {
+
+
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Vin
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string CarCode
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string SeccarCode
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Pyshort
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string CarType
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string CartypeName
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public double FixedWeight
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Remark
+            {
+                get;
+                set;
+            }
+
         }
     }
 }
